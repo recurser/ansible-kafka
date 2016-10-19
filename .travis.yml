@@ -1,3 +1,7 @@
+---
+language: python
+python: "2.7"
+
 # Use following configuration to run ZooKeeper while executing tests
 
 before_install:
