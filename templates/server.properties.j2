@@ -1,3 +1,19 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# see kafka.server.KafkaConfig for additional details and defaults
+
 ############################# Server Basics #############################
 
 # The id of the broker. This must be set to a unique integer for each broker.
@@ -6,29 +22,23 @@
   {%- if url_host == ansible_fqdn or url_host in ansible_all_ipv4_addresses
          or ( kafka_id is defined and loop.index0 == kafka_id | int ) -%}
 broker.id={{loop.index0}}
-
-############################# Socket Server Settings #############################
-
-# The port the socket server listens on
-port={{url.split(':')[1]}}
   {% endif %}
 {% endfor %}
 
-# Hostname the broker will bind to. If not set, the server will bind to all interfaces
-{% if kafka_listen_address is defined %}
-host.name={{kafka_listen_address}}
-{% else %}
-#host.name=localhost
-{% endif %}
+############################# Socket Server Settings #############################
 
-# Hostname the broker will advertise to producers and consumers. If not set, it uses the
-# value for "host.name" if configured.  Otherwise, it will use the value returned from
-# java.net.InetAddress.getCanonicalHostName().
-#advertised.host.name=<hostname routable by clients>
+# The address the socket server listens on. It will get the value returned from
+# java.net.InetAddress.getCanonicalHostName() if not configured.
+#   FORMAT:
+#     listeners = security_protocol://host_name:port
+#   EXAMPLE:
+#     listeners = PLAINTEXT://your.host.name:9092
+#listeners=PLAINTEXT://:9092
 
-# The port to publish to ZooKeeper for clients to use. If this is not set,
-# it will publish the same port that the broker binds to.
-#advertised.port=<port accessible by clients>
+# Hostname and port the broker will advertise to producers and consumers. If not set,
+# it uses the value for "listeners" if configured.  Otherwise, it will use the value
+# returned from java.net.InetAddress.getCanonicalHostName().
+#advertised.listeners=PLAINTEXT://your.host.name:9092
 
 # The number of threads handling network requests
 num.network.threads={{kafka_num_network_threads}}
@@ -51,10 +61,14 @@ socket.request.max.bytes={{kafka_socket_request_max_bytes}}
 # A comma seperated list of directories under which to store log files
 log.dirs={{kafka_data_dir}}
 
-auto.create.topics.enable={{kafka_auto_create_topics}}
-# The number of logical partitions per topic per server. More partitions allow greater parallelism
-# for consumption, but also mean more files.
+# The default number of log partitions per topic. More partitions allow greater
+# parallelism for consumption, but this will also result in more files across
+# the brokers.
 num.partitions={{kafka_num_partitions}}
+
+# The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.
+# This value is recommended to be increased for installations with data dirs located in RAID array.
+num.recovery.threads.per.data.dir=1
 
 ############################# Log Flush Policy #############################
 
@@ -92,11 +106,7 @@ log.segment.bytes={{kafka_log_segment_bytes}}
 
 # The interval at which log segments are checked to see if they can be deleted according
 # to the retention policies
-log.retention.check.interval.ms=60000
-
-# By default the log cleaner is disabled and the log retention policy will default to just delete segments after their retention expires.
-# If log.cleaner.enable=true is set the cleaner will be enabled and individual logs can then be marked for log compaction.
-log.cleaner.enable=false
+log.retention.check.interval.ms=300000
 
 ############################# Zookeeper #############################
 
