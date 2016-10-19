@@ -2,5 +2,13 @@
 - name: Install OpenJDK
   apt: name=openjdk-7-jre-headless state=present
 
+- name: select download mirror from Apache
+  register: test_var
+  shell: "curl --stderr /dev/null https://www.apache.org/dyn/closer.cgi?as_json=1"
+  register: apache_mirror
+
 - name: Fetch kafka binary package
-  get_url: dest="{{ kafka_tarball_location }}/{{ kafka_tarball_name }}" url="{{apache_mirror}}/kafka/{{kafka_version}}/{{kafka_tarball_name}}"
+  become: yes
+  get_url:
+    dest: "{{kafka_tarball_location}}/{{kafka_tarball_name}}"
+    url: "{{(apache_mirror.stdout|from_json)['preferred']}}kafka/{{kafka_version}}/kafka_{{scala_version}}-{{kafka_version}}.tgz"
