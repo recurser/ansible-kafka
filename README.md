@@ -1,4 +1,5 @@
 #Kafka
+[![Build Status](https://travis-ci.org/katzefudder/ansible-kafka.svg?branch=master)](https://travis-ci.org/katzefudder/ansible-kafka)
 Installs [kafka](https://kafka.apache.org/)
 
 ##Requirements
