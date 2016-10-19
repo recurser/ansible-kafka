@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost
   remote_user: root
   pre_tasks:
     - include_vars: test-vars.yml
