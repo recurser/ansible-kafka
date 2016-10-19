@@ -1,0 +1,7 @@
+---
+- hosts: all
+  remote_user: root
+  pre_tasks:
+    - include_vars: test-vars.yml
+  roles:
+    - ansible-kafka

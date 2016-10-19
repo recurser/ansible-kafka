@@ -1,0 +1,27 @@
+# Use following configuration to run ZooKeeper while executing tests
+
+before_install:
+  # Add repository key
+  - "curl -s http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh/archive.key | sudo apt-key add -"
+  - "wget http://archive.cloudera.com/cdh4/one-click-install/precise/amd64/cdh4-repository_1.0_all.deb"
+  # Add Cloudera repository
+  - "sudo dpkg -i cdh4-repository_1.0_all.deb"
+  - "sudo apt-get update -qq"
+  # Install ZooKeeper
+  - "sudo apt-get install -y zookeeper-server"
+before_script:
+  - "sudo service zookeeper-server init"
+  - "sudo service zookeeper-server start"
+after_script:
+  - "sudo service zookeeper-server stop"
+
+install:
+  # Install Ansible.
+  - pip install ansible
+
+  # Add ansible.cfg to pick up roles path.
+  - "printf '[defaults]\nroles_path = ../' > ansible.cfg"
+
+script:
+  - ansible-playbook -i tests/inventory tests/test.yml --syntax-check
+  - "ansible-playbook -i tests/inventory tests/test.yml --connection=local --sudo"
