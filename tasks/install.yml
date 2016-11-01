@@ -1,6 +1,6 @@
 ---
 - name: Install OpenJDK
-  apt: name=openjdk-7-jre-headless state=present
+  apt: name={{kafka_java_version}} state=present
 
 - name: select download mirror from Apache
   register: test_var
