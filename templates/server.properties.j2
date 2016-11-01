@@ -33,12 +33,21 @@ broker.id={{loop.index0}}
 #     listeners = security_protocol://host_name:port
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
+{% if kafka_listeners is defined %}
+listeners={{kafka_listeners}}
+{% else %}
 #listeners=PLAINTEXT://:9092
+{% endif %}
 
 # Hostname and port the broker will advertise to producers and consumers. If not set,
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value
 # returned from java.net.InetAddress.getCanonicalHostName().
+{% if kafka_advertised_listeners is defined %}
+advertised.listeners={{kafka_advertised_listeners}}
+{% else %}
 #advertised.listeners=PLAINTEXT://your.host.name:9092
+{% endif %}
+
 
 # The number of threads handling network requests
 num.network.threads={{kafka_num_network_threads}}
