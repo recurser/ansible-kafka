@@ -9,7 +9,7 @@ limit nofile 32768 32768
 
 # If zookeeper is running on this box also give it time to start up properly
 pre-start script
-    if [ -e /etc/init.d/zookeeper ]; then
+    if /etc/init.d/zookeeper status | grep stop; then
         /etc/init.d/zookeeper start
     fi
 end script
